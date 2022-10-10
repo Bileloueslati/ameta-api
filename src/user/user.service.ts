@@ -69,7 +69,7 @@ export class UserService {
     });
   }
 
-  hashPassword(plainPassword: string) {
+  hashPassword(plainPassword: string): Promise<string> {
     return bcrypt.hash(plainPassword, 10);
   }
 }
