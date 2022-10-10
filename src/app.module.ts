@@ -12,6 +12,7 @@ import { ForgetPasswordModule } from './forget-password/forget-password.module';
 import { ConfigModule } from '@nestjs/config';
 import { MailModule } from './mail/mail.module';
 import { ResetPasswordModule } from './reset-password/reset-password.module';
+import { GatewayModule } from './gateway/gateway.module';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { ResetPasswordModule } from './reset-password/reset-password.module';
     }),
     MailModule,
     ResetPasswordModule,
+    GatewayModule,
   ],
   controllers: [AppController],
   providers: [AppService],
