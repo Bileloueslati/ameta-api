@@ -52,6 +52,13 @@ export class ForgetPasswordController {
 
     if (!req) throw new NotFoundException('Token not found');
 
+    const hasExpired = this.forgetPasswordService.hasExpired(req);
+
+    if (hasExpired) {
+      await this.forgetPasswordService.delete(req.id);
+      throw new NotFoundException('Token has expired');
+    }
+
     return req;
   }
 }

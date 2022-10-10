@@ -34,7 +34,7 @@ export class UserService {
   async createOne(data: Partial<User>) {
     const { password: plainPassword } = data;
 
-    const password = await bcrypt.hash(plainPassword, 10);
+    const password = await this.hashPassword(plainPassword);
 
     return this.userModel.create({ ...data, password });
   }
@@ -67,5 +67,9 @@ export class UserService {
     return this.userModel.update(data, {
       where: { id },
     });
+  }
+
+  hashPassword(plainPassword: string) {
+    return bcrypt.hash(plainPassword, 10);
   }
 }

@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ForgetPassword } from './forget-password.model';
 import { InjectModel } from '@nestjs/sequelize';
 import { User } from 'src/user/user.model';
+import * as dayjs from 'dayjs';
 
 @Injectable()
 export class ForgetPasswordService {
@@ -28,5 +29,15 @@ export class ForgetPasswordService {
         id,
       },
     });
+  }
+
+  hasExpired(req: ForgetPassword): boolean {
+    const now = dayjs();
+
+    const { createdAt } = req;
+
+    const expiresAt = dayjs(createdAt).add(30, 'minute');
+
+    return now.isAfter(expiresAt);
   }
 }
