@@ -3,18 +3,18 @@ import {
   Get,
   Post,
   Put,
-  Req,
+  Body,
   Param,
   Query,
   BadRequestException,
   NotFoundException,
   UseGuards,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { Request } from 'express';
-import { ValidationError } from 'sequelize';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { User } from './user.model';
+import UserUpdateDto from './dto/userUpdateDto';
+import UserCreateDto from './dto/userCreateDto';
 
 @Controller('users')
 export class UserController {
@@ -36,7 +36,7 @@ export class UserController {
   }
 
   @Get('/:id')
-  async findOne(@Param('id') id: number) {
+  async find(@Param('id') id: number) {
     try {
       const user = await this.userService.findOne(id);
 
@@ -46,38 +46,23 @@ export class UserController {
     }
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post()
-  async createOne(@Req() req: Request) {
-    try {
-      const data = req.body as Partial<User>;
+  async create(@Body() user: UserCreateDto) {
+    await this.userService.createOne(user);
 
-      const { email, password } = data;
-
-      if (!email || !password)
-        throw new BadRequestException('Email and password are required');
-
-      const user = await this.userService.createOne(data);
-
-      return user;
-    } catch (e: unknown) {
-      throw new BadRequestException(
-        e instanceof ValidationError
-          ? e.errors
-          : e instanceof BadRequestException
-          ? e.message
-          : null,
-      );
-    }
+    return user;
   }
 
+  @UseGuards(JwtAuthGuard)
   @Put('/:id')
-  async edit(@Req() req: Request, @Param('id') id: number) {
+  async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() user: UserUpdateDto,
+  ) {
     try {
-      const user = await this.userService.updateOne(
-        id,
-        req.body as Partial<User>,
-      );
-      return user;
+      await this.userService.updateOne(id, user);
+      return { message: 'User successfully updated' };
     } catch (e: unknown) {
       throw new BadRequestException();
     }

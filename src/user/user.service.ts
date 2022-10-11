@@ -6,6 +6,8 @@ import { Compagny } from 'src/compagny/compagny.model';
 import { PaginateService, PaginateOptions } from 'nestjs-sequelize-paginate';
 import { FindAndCountOptions } from 'sequelize/types';
 import { Op } from 'sequelize';
+import UserUpdateDto from './dto/userUpdateDto';
+import UserCreateDto from './dto/userCreateDto';
 
 @Injectable()
 export class UserService {
@@ -31,12 +33,12 @@ export class UserService {
     });
   }
 
-  async createOne(data: Partial<User>) {
-    const { password: plainPassword } = data;
+  async createOne(user: UserCreateDto) {
+    const { password: plainPassword } = user;
 
     const password = await this.hashPassword(plainPassword);
 
-    return this.userModel.create({ ...data, password });
+    return this.userModel.create({ ...user, password });
   }
 
   findAll(options: PaginateOptions): Promise<any> {
@@ -63,7 +65,7 @@ export class UserService {
     return paginate;
   }
 
-  updateOne(id: number, data: Partial<User>) {
+  updateOne(id: number, data: UserUpdateDto) {
     return this.userModel.update(data, {
       where: { id },
     });

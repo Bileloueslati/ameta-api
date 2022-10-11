@@ -39,6 +39,7 @@ export class User extends Model {
   @Column(DataType.JSON)
   roles: JSON;
 
+  @Column(DataType.BOOLEAN)
   @Column({ defaultValue: true })
   isActive: boolean;
 
