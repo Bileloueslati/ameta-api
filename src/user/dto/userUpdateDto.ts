@@ -3,17 +3,17 @@ import { IsBoolean, MinLength, IsOptional } from 'class-validator';
 export default class UserUpdateDto {
   @IsOptional()
   @MinLength(2)
-  firstName: string;
+  firstName?: string;
 
   @IsOptional()
   @MinLength(2)
-  lastName: string;
+  lastName?: string;
 
   @IsOptional()
   @MinLength(6)
-  password: string;
+  password?: string;
 
   @IsOptional()
   @IsBoolean()
-  isActive: boolean;
+  isActive?: boolean;
 }
