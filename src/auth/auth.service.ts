@@ -11,24 +11,29 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async validateUser(email: string, password: string): Promise<any> {
+  async validateUser(
+    email: string,
+    plainPassword: string,
+  ): Promise<typeof User> {
     const user = await this.userService.findOne(email, true);
 
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    if (!user.isActive) {
+    const { isActive, password } = user;
+
+    if (!isActive) {
       throw new UnauthorizedException('Your account is disabled');
     }
 
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    const isPasswordValid = await bcrypt.compare(plainPassword, password);
 
-    if (isPasswordValid) {
-      return user.toJSON();
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Invalid credentials');
     }
 
-    throw new UnauthorizedException('Invalid credentials');
+    return user.toJSON();
   }
 
   async login({ id, firstName, lastName, roles }: User) {
