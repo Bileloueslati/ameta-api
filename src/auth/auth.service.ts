@@ -12,19 +12,23 @@ export class AuthService {
   ) {}
 
   async validateUser(email: string, password: string): Promise<any> {
-    try {
-      const user = await this.userService.findOne(email, true);
+    const user = await this.userService.findOne(email, true);
 
-      const isPasswordValid = await bcrypt.compare(password, user.password);
-
-      if (isPasswordValid) {
-        return user.toJSON();
-      }
-
-      throw new UnauthorizedException('invalid credentials');
-    } catch (e: any) {
-      return null;
+    if (!user) {
+      throw new UnauthorizedException('Invalid credentials');
     }
+
+    if (!user.isActive) {
+      throw new UnauthorizedException('Your account is disabled');
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (isPasswordValid) {
+      return user.toJSON();
+    }
+
+    throw new UnauthorizedException('Invalid credentials');
   }
 
   async login({ id, firstName, lastName, roles }: User) {
