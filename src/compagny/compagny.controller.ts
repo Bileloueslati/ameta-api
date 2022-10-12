@@ -11,7 +11,6 @@ import {
 } from '@nestjs/common';
 import { CompagnyService } from './compagny.service';
 import { Request } from 'express';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import * as path from 'path';
@@ -24,7 +23,7 @@ export class CompagnyController {
 
   @Get()
   @HasRoles(Role.SuperAdmin)
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(RolesGuard)
   async findAll(@Query() query: { page?: number; offset?: number }) {
     try {
       const compagnies = await this.compagnyService.findAll({
@@ -39,7 +38,7 @@ export class CompagnyController {
   }
 
   @HasRoles(Role.SuperAdmin)
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(RolesGuard)
   @Post()
   @UseInterceptors(
     FileInterceptor('file', {

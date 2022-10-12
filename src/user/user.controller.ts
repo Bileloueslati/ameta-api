@@ -8,19 +8,20 @@ import {
   Query,
   BadRequestException,
   NotFoundException,
-  UseGuards,
   ParseIntPipe,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import UserUpdateDto from './dto/userUpdateDto';
 import UserCreateDto from './dto/userCreateDto';
+import { GateWay } from 'src/gateway/gateway';
 
 @Controller('users')
 export class UserController {
-  constructor(private userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly gateWay: GateWay,
+  ) {}
 
-  @UseGuards(JwtAuthGuard)
   @Get()
   async findAll(@Query() query: { page?: number; offset?: number }) {
     try {
@@ -30,7 +31,6 @@ export class UserController {
       });
       return users;
     } catch (e: unknown) {
-      console.log(e);
       throw new BadRequestException();
     }
   }
@@ -46,7 +46,6 @@ export class UserController {
     }
   }
 
-  @UseGuards(JwtAuthGuard)
   @Post()
   async create(@Body() user: UserCreateDto) {
     await this.userService.createOne(user);
@@ -54,13 +53,18 @@ export class UserController {
     return user;
   }
 
-  @UseGuards(JwtAuthGuard)
   @Put('/:id')
   async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() user: UserUpdateDto,
   ) {
     try {
+      if (user.isActive === false) {
+        this.gateWay.server.emit('disabledUser', {
+          id,
+        });
+      }
+
       await this.userService.updateOne(id, user);
       return { message: 'User successfully updated' };
     } catch (e: unknown) {

@@ -12,6 +12,7 @@ import { UserService } from 'src/user/user.service';
 import { v4 as generateToken } from '@lukeed/uuid/secure';
 import { ForgetPasswordDto } from './dto/forgetPasswordDto';
 import { ForgetPasswordService } from './forget-password.service';
+import { Public } from 'src/decorators/public.decorator';
 
 @Controller('forget-password')
 export class ForgetPasswordController {
@@ -21,6 +22,7 @@ export class ForgetPasswordController {
     private readonly forgetPasswordService: ForgetPasswordService,
   ) {}
 
+  @Public()
   @Post()
   async create(@Body() { email }: ForgetPasswordDto) {
     const user = await this.userService.findOne(email);
@@ -46,6 +48,7 @@ export class ForgetPasswordController {
     }
   }
 
+  @Public()
   @Get('/:token')
   async find(@Param('token') token: string) {
     const req = await this.forgetPasswordService.findOneByToken(token);

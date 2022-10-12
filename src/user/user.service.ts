@@ -74,4 +74,11 @@ export class UserService {
   hashPassword(plainPassword: string): Promise<string> {
     return bcrypt.hash(plainPassword, 10);
   }
+
+  isActive(id: number): Promise<{ isActive: boolean }> {
+    return this.userModel.findOne({
+      where: { id },
+      attributes: ['isActive'],
+    });
+  }
 }
