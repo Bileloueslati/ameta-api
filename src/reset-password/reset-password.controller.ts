@@ -1,4 +1,5 @@
 import { Controller, Post, Body, BadRequestException } from '@nestjs/common';
+import { Public } from 'src/decorators/public.decorator';
 import { ForgetPasswordService } from 'src/forget-password/forget-password.service';
 import { UserService } from 'src/user/user.service';
 import { ResetPasswordDto } from './dto/resetPasswordDto';
@@ -10,6 +11,7 @@ export class ResetPasswordController {
     private readonly userService: UserService,
   ) {}
 
+  @Public()
   @Post()
   async reset(@Body() { token, newPassword: plainPassword }: ResetPasswordDto) {
     const req = await this.forgetPasswordService.findOneByToken(token);
